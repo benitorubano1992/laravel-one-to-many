@@ -34,6 +34,23 @@
 
                 </select>
 
+                @foreach ($tecnologies as $tecnology)
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="tecnologies[]"
+                            class="form-check-input @error('tecnologies')
+                    is-invalid
+                    @enderror"
+                            id="tecnology-{{ $tecnology->id }}" @checked($project->tecnologies->contains($tecnology->id)) value="{{ $tecnology->id }}">
+                        <label class="form-check-label" for="tecnology-{{ $tecnology->id }}">{{ $tecnology->name }}</label>
+                        @error('tecnologies')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+                @endforeach
+
 
 
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\Tecnology;
 use App\Models\Type;
 use Illuminate\Support\Facades\Storage;
 
@@ -30,7 +31,8 @@ class ProjectController extends Controller
     public function create()
     {
         $types = Type::all();
-        return view('admin.projects.create', compact('types'));
+        $tecnologies = Tecnology::all();
+        return view('admin.projects.create', compact('types', 'tecnologies'));
     }
 
     /**
@@ -50,6 +52,9 @@ class ProjectController extends Controller
             $form_data['cover_image'] = $path;
         }
         $project = Project::create($form_data);
+        if ($request->has('tecnologies')) {
+            $project->tecnologies()->attach($request->tecnologies);
+        }
         return redirect()->route('admin.projects.index')->with('message', "il progetto $project->title è stato aggiunto correttamente");
     }
 
@@ -61,7 +66,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return view('admin.projects.show', compact('project'));
+        $tecnologies = $project->tecnologies;
+        return view('admin.projects.show', compact('project', 'tecnologies'));
     }
 
     /**
@@ -73,7 +79,8 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $types = Type::all();
-        return view('admin.projects.edit', compact('project', 'types'));
+        $tecnologies = Tecnology::all();
+        return view('admin.projects.edit', compact('project', 'types', 'tecnologies'));
     }
 
     /**
@@ -98,6 +105,11 @@ class ProjectController extends Controller
             $form_data['cover_image'] = $path;
         }
         $project->update($form_data);
+        if ($request->has('tags')) {
+            $project->tecnologies()->sync($request->tecnologies);
+        } else {
+            $project->tecnologies()->sync($request->tecnologies);
+        }
         return redirect()->route('admin.projects.index')->with('message', "il progettp con  titolo $project->title è stato aggiornato correttamente");
     }
 
@@ -110,6 +122,7 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $titolo = $project->title;
+        $project->tecnologies()->detach();
         $project->delete();
 
         return redirect()->route('admin.projects.index')->with('message', "il progetto $titolo è stato eliminato");

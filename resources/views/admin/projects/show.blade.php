@@ -7,6 +7,12 @@
             <div>{{ $project->created_at }}</div>
             <div>{{ $project->slug }}</div>
         </div>
+        @forelse ($tecnologies as $tecnology)
+            <span>#{{ $tecnology->name }}</span>
+        @empty
+            <p>Non ci sono tecnologie associate a questo progetto</p>
+        @endforelse
+
         <div class="text-center my-3">
             @if ($project->cover_image)
                 <img src="{{ asset('storage/' . $project->cover_image) }}" alt="immagine" class="w-50">
